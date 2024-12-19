@@ -36,12 +36,18 @@ public class VideoController : MonoBehaviour
     public Button voltaRapidaVendado;
     public Sprite voltaRapidaVendadoChoosen;
 
+
     public List<VideoPlayer> videos;
     public List<Button> buttons;
+
+    public string lastPlayed;
+    public GameObject barLoadAnimator;
 
     private void Start()
     {
         panel = GetComponent<RawImage>();
+        barLoadAnimator.gameObject.SetActive(false);
+        lastPlayed = "";
         ConfigureVideoEvents();
         InitialState();
         ConfigureButtonsEvents();
@@ -67,10 +73,7 @@ public class VideoController : MonoBehaviour
 
     private void InitialState()
     {
-        videoPrincipalCorrida.Play();
-        panel.texture = videoPrincipalCorridaTexture;
-        ilhaOptions.SetActive(false);
-        corridaOptions.SetActive(true);
+        PlayVideoPrincipalCorrida();
     }
 
     private void RegisterVideoEndEvent(VideoPlayer videoPlayer, VideoPlayer.EventHandler handler)
@@ -87,10 +90,7 @@ public class VideoController : MonoBehaviour
 
     private void OnVideoPrincipalCorridaEnd(VideoPlayer vp)
     {
-        videoPrincipalIlha.Play();
-        panel.texture = videoPrincipalIlhaTexture;
-        corridaOptions.SetActive(false);
-        ilhaOptions.SetActive(true);
+        barLoadAnimator.gameObject.SetActive(true);
     }
 
     private void OnVideooCorridaVendadoEnd(VideoPlayer vp)
@@ -106,10 +106,7 @@ public class VideoController : MonoBehaviour
 
     private void OnVideoPrincipalIlhaEnd(VideoPlayer vp)
     {
-        videoPrincipalCorrida.Play();
-        panel.texture = videoPrincipalCorridaTexture;
-        ilhaOptions.SetActive(false);
-        corridaOptions.SetActive(true);
+        barLoadAnimator.gameObject.SetActive(true);
     }
 
     private void OnVideoComprarIlhaEnd(VideoPlayer vp)
@@ -128,19 +125,24 @@ public class VideoController : MonoBehaviour
         StopAllVideos();
         ilhaOptions.SetActive(false);
         corridaOptions.SetActive(true);
-        panel.texture = videoDriftTexture;
+        videoDrift.targetTexture.Release();
         videoDrift.Play();
+        panel.texture = videoDriftTexture;
         zerinhoCarrao.image.sprite = zerinhoCarraoChoosen;
+        barLoadAnimator.gameObject.SetActive(false);
         DisableButtonsEvent();
     }
+
     private void OnVoltaOlhosVendadosChoose()
     {
         StopAllVideos();
         ilhaOptions.SetActive(false);
         corridaOptions.SetActive(true);
-        panel.texture = videoCorridaVendadoTexture;
+        videoCorridaVendado.targetTexture.Release();
         videoCorridaVendado.Play();
+        panel.texture = videoCorridaVendadoTexture;
         voltaRapidaVendado.image.sprite = voltaRapidaVendadoChoosen;
+        barLoadAnimator.gameObject.SetActive(false);
         DisableButtonsEvent();
     }
 
@@ -150,9 +152,11 @@ public class VideoController : MonoBehaviour
         StopAllVideos();
         corridaOptions.SetActive(false);
         ilhaOptions.SetActive(true);
-        panel.texture = videoComprarIlhaTexture;
+        videoComprarIlha.targetTexture.Release();
         videoComprarIlha.Play();
+        panel.texture = videoComprarIlhaTexture;
         curtirIlhaSua.image.sprite = curtirIlhaSuaChoosen;
+        barLoadAnimator.gameObject.SetActive(false);
         DisableButtonsEvent();
     }
 
@@ -161,9 +165,11 @@ public class VideoController : MonoBehaviour
         StopAllVideos();
         corridaOptions.SetActive(false);
         ilhaOptions.SetActive(true);
-        panel.texture = videoNadarGolfinhoTexture;
+        videoNadarGolfinho.targetTexture.Release();
         videoNadarGolfinho.Play();
+        panel.texture = videoNadarGolfinhoTexture;
         mergulharGolfinhos.image.sprite = mergulharGolfinhosChoosen;
+        barLoadAnimator.gameObject.SetActive(false);
         DisableButtonsEvent();
     }
 
@@ -181,6 +187,30 @@ public class VideoController : MonoBehaviour
         {
             button.onClick.RemoveAllListeners();
         }
+    }
+
+    public void PlayVideoPrincipalIlha()
+    {
+        videoPrincipalIlha.targetTexture.Release();
+        videoPrincipalIlha.enabled = false;
+        videoPrincipalIlha.enabled = true;
+        videoPrincipalIlha.Play();
+        panel.texture = videoPrincipalIlhaTexture;
+        corridaOptions.SetActive(false);
+        ilhaOptions.SetActive(true);
+        lastPlayed = "VideoPrincipalIlha";
+    }
+
+    public void PlayVideoPrincipalCorrida()
+    {
+        videoPrincipalCorrida.targetTexture.Release();
+        videoPrincipalCorrida.enabled = false;
+        videoPrincipalCorrida.enabled = true;
+        videoPrincipalCorrida.Play();
+        panel.texture = videoPrincipalCorridaTexture;
+        ilhaOptions.SetActive(false);
+        corridaOptions.SetActive(true);
+        lastPlayed = "VideoPrincipalCorrida";
     }
 
 
