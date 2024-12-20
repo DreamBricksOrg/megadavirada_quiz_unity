@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,14 +28,20 @@ public class VideoController : MonoBehaviour
     [Header("Opções de Interface")]
     public GameObject ilhaOptions;
     public Button curtirIlhaSua;
-    public Sprite curtirIlhaSuaChoosen;
     public Button mergulharGolfinhos;
-    public Sprite mergulharGolfinhosChoosen;
     public GameObject corridaOptions;
     public Button zerinhoCarrao;
-    public Sprite zerinhoCarraoChoosen;
     public Button voltaRapidaVendado;
+
+    [Header("Cores")]
+    public Sprite mergulharGolfinhosChoosen;
+    public Sprite curtirIlhaSuaChoosen;
+    public Sprite zerinhoCarraoChoosen;
     public Sprite voltaRapidaVendadoChoosen;
+    public Sprite mergulharGolfinhosOriginal;
+    public Sprite curtirIlhaSuaOriginal;
+    public Sprite zerinhoCarraoOriginal;
+    public Sprite voltaRapidaVendadoOriginal;
 
 
     public List<VideoPlayer> videos;
@@ -42,6 +49,8 @@ public class VideoController : MonoBehaviour
 
     public string lastPlayed;
     public GameObject barLoadAnimator;
+
+    public int videoPrincipalIlhaPlayCount = 0;
 
     private void Start()
     {
@@ -90,33 +99,44 @@ public class VideoController : MonoBehaviour
 
     private void OnVideoPrincipalCorridaEnd(VideoPlayer vp)
     {
+        StartCoroutine(AnimateButtonSize(zerinhoCarrao));
+        StartCoroutine(AnimateButtonSize(voltaRapidaVendado));
         barLoadAnimator.gameObject.SetActive(true);
     }
 
     private void OnVideooCorridaVendadoEnd(VideoPlayer vp)
     {
-        SceneManager.LoadScene("SampleScene");
+        PlayVideoPrincipalIlha();
+        voltaRapidaVendado.image.sprite = voltaRapidaVendadoOriginal;
+        ConfigureButtonsEvents();
     }
 
     private void OnVideoDriftEnd(VideoPlayer vp)
     {
-        SceneManager.LoadScene("SampleScene");
-
+        PlayVideoPrincipalIlha();
+        zerinhoCarrao.image.sprite = zerinhoCarraoOriginal;
+        ConfigureButtonsEvents();
     }
 
     private void OnVideoPrincipalIlhaEnd(VideoPlayer vp)
     {
+        StartCoroutine(AnimateButtonSize(curtirIlhaSua));
+        StartCoroutine(AnimateButtonSize(mergulharGolfinhos));
         barLoadAnimator.gameObject.SetActive(true);
     }
 
     private void OnVideoComprarIlhaEnd(VideoPlayer vp)
     {
-        SceneManager.LoadScene("SampleScene");
+        PlayVideoPrincipalCorrida();
+        curtirIlhaSua.image.sprite = curtirIlhaSuaOriginal;
+        ConfigureButtonsEvents();
     }
 
     private void OnVideoNadarGolfinhoEnd(VideoPlayer vp)
     {
-        SceneManager.LoadScene("SampleScene");
+        PlayVideoPrincipalCorrida();
+        mergulharGolfinhos.image.sprite = mergulharGolfinhosOriginal;
+        ConfigureButtonsEvents();
     }
 
 
@@ -130,6 +150,7 @@ public class VideoController : MonoBehaviour
         panel.texture = videoDriftTexture;
         zerinhoCarrao.image.sprite = zerinhoCarraoChoosen;
         barLoadAnimator.gameObject.SetActive(false);
+        SaveLog("Dar zerinhos com o carrão");
         DisableButtonsEvent();
     }
 
@@ -143,6 +164,7 @@ public class VideoController : MonoBehaviour
         panel.texture = videoCorridaVendadoTexture;
         voltaRapidaVendado.image.sprite = voltaRapidaVendadoChoosen;
         barLoadAnimator.gameObject.SetActive(false);
+        SaveLog("Uma volta rápida com os olhos vendados");
         DisableButtonsEvent();
     }
 
@@ -157,6 +179,7 @@ public class VideoController : MonoBehaviour
         panel.texture = videoComprarIlhaTexture;
         curtirIlhaSua.image.sprite = curtirIlhaSuaChoosen;
         barLoadAnimator.gameObject.SetActive(false);
+        SaveLog("Curtir uma ilha toda sua");
         DisableButtonsEvent();
     }
 
@@ -170,6 +193,7 @@ public class VideoController : MonoBehaviour
         panel.texture = videoNadarGolfinhoTexture;
         mergulharGolfinhos.image.sprite = mergulharGolfinhosChoosen;
         barLoadAnimator.gameObject.SetActive(false);
+        SaveLog("Mergulhar com golfinhos");
         DisableButtonsEvent();
     }
 
@@ -203,6 +227,8 @@ public class VideoController : MonoBehaviour
 
     public void PlayVideoPrincipalCorrida()
     {
+        videoPrincipalIlhaPlayCount++;
+        CheckVideoPrincipalIlhaPlayCount();
         videoPrincipalCorrida.targetTexture.Release();
         videoPrincipalCorrida.enabled = false;
         videoPrincipalCorrida.enabled = true;
@@ -213,13 +239,61 @@ public class VideoController : MonoBehaviour
         lastPlayed = "VideoPrincipalCorrida";
     }
 
+    private void CheckVideoPrincipalIlhaPlayCount()
+    {
+        if (videoPrincipalIlhaPlayCount >= 8)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
 
-    private void SaveLog()
+    private void SaveLog(string additional)
     {
         DataLog dataLog = LogUtil.GetDatalogFromJson();
         dataLog.status = StatusEnum.Jogou.ToString();
-        dataLog.additional = "vazio";
+        dataLog.additional = additional;
         LogUtil.SaveLog(dataLog);
     }
 
+    private IEnumerator AnimateButtonSize(Button button)
+    {
+        float duration = 0.5f; // Duração da animação (segundos)
+        RectTransform buttonTransform = button.GetComponent<RectTransform>();
+
+        Vector2 originalSize = buttonTransform.sizeDelta; // Tamanho original do botão
+        Vector2 targetSize = originalSize * 1.2f; // Tamanho aumentado (120% do original)
+
+        // Executar a animação 3 vezes
+        for (int i = 0; i < 3; i++)
+        {
+            // Crescendo o botão
+            for (float t = 0; t < duration; t += Time.deltaTime)
+            {
+                float normalizedTime = t / duration;
+                Vector2 newSize = Vector2.Lerp(originalSize, targetSize, normalizedTime);
+                buttonTransform.sizeDelta = newSize;
+                yield return null;
+            }
+
+            // Garante que o tamanho final seja o tamanho alvo
+            buttonTransform.sizeDelta = targetSize;
+
+            // Retornando ao tamanho original
+            for (float t = 0; t < duration; t += Time.deltaTime)
+            {
+                float normalizedTime = t / duration;
+                Vector2 newSize = Vector2.Lerp(targetSize, originalSize, normalizedTime);
+                buttonTransform.sizeDelta = newSize;
+                yield return null;
+            }
+
+            // Garante que o tamanho final seja o tamanho original
+            buttonTransform.sizeDelta = originalSize;
+        }
+    }
+
+    public void AnimateSpecificButton(Button button)
+    {
+        StartCoroutine(AnimateButtonSize(button));
+    }
 }

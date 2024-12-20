@@ -516,7 +516,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &667977999
 Transform:
   m_ObjectHideFlags: 0
@@ -1900,14 +1900,18 @@ MonoBehaviour:
   videoNadarGolfinho: {fileID: 843885193}
   ilhaOptions: {fileID: 876242107}
   curtirIlhaSua: {fileID: 912194078}
-  curtirIlhaSuaChoosen: {fileID: 21300000, guid: 96d73cce3506fb94381192e518a3c9cb, type: 3}
   mergulharGolfinhos: {fileID: 17710640}
-  mergulharGolfinhosChoosen: {fileID: 21300000, guid: 6b01b3ffa0aec1c4da6926072ff84a82, type: 3}
   corridaOptions: {fileID: 781589}
   zerinhoCarrao: {fileID: 1225515875}
-  zerinhoCarraoChoosen: {fileID: 21300000, guid: 2612e649a98966646bb937acc5049f69, type: 3}
   voltaRapidaVendado: {fileID: 1007959898}
+  mergulharGolfinhosChoosen: {fileID: 21300000, guid: 6b01b3ffa0aec1c4da6926072ff84a82, type: 3}
+  curtirIlhaSuaChoosen: {fileID: 21300000, guid: 96d73cce3506fb94381192e518a3c9cb, type: 3}
+  zerinhoCarraoChoosen: {fileID: 21300000, guid: 2612e649a98966646bb937acc5049f69, type: 3}
   voltaRapidaVendadoChoosen: {fileID: 21300000, guid: a0ba558b91a8aac4e9390662a67a64be, type: 3}
+  mergulharGolfinhosOriginal: {fileID: 21300000, guid: aa88eb1892e4be944b700654341413d1, type: 3}
+  curtirIlhaSuaOriginal: {fileID: 21300000, guid: cf04b7b0cd55cf345b729439a2d7b584, type: 3}
+  zerinhoCarraoOriginal: {fileID: 21300000, guid: 2dc2aa10d8227ec4d8a310325c1fb003, type: 3}
+  voltaRapidaVendadoOriginal: {fileID: 21300000, guid: 93243b6a40dc85248b923f69c7a1721b, type: 3}
   videos:
   - {fileID: 1022598777}
   - {fileID: 1630815074}
@@ -1922,6 +1926,7 @@ MonoBehaviour:
   - {fileID: 1007959898}
   lastPlayed: 
   barLoadAnimator: {fileID: 1968632843}
+  videoPrincipalIlhaPlayCount: 0
 --- !u!1 &1784292547
 GameObject:
   m_ObjectHideFlags: 0
