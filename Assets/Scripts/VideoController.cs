@@ -101,7 +101,7 @@ public class VideoController : MonoBehaviour
     {
         StartCoroutine(AnimateButtonSize(zerinhoCarrao));
         StartCoroutine(AnimateButtonSize(voltaRapidaVendado));
-        barLoadAnimator.gameObject.SetActive(true);
+        StartCoroutine(DelayedBarLoadActivation());
     }
 
     private void OnVideooCorridaVendadoEnd(VideoPlayer vp)
@@ -122,7 +122,7 @@ public class VideoController : MonoBehaviour
     {
         StartCoroutine(AnimateButtonSize(curtirIlhaSua));
         StartCoroutine(AnimateButtonSize(mergulharGolfinhos));
-        barLoadAnimator.gameObject.SetActive(true);
+        StartCoroutine(DelayedBarLoadActivation());
     }
 
     private void OnVideoComprarIlhaEnd(VideoPlayer vp)
@@ -140,7 +140,7 @@ public class VideoController : MonoBehaviour
     }
 
 
-    private void OnZerinhosCarraoChoose()
+    public void OnZerinhosCarraoChoose()
     {
         StopAllVideos();
         ilhaOptions.SetActive(false);
@@ -169,7 +169,7 @@ public class VideoController : MonoBehaviour
     }
 
 
-    private void OnCurtirIlhaSuaChoose()
+    public void OnCurtirIlhaSuaChoose()
     {
         StopAllVideos();
         corridaOptions.SetActive(false);
@@ -228,7 +228,7 @@ public class VideoController : MonoBehaviour
     public void PlayVideoPrincipalCorrida()
     {
         videoPrincipalIlhaPlayCount++;
-        CheckVideoPrincipalIlhaPlayCount();
+        // CheckVideoPrincipalIlhaPlayCount();
         videoPrincipalCorrida.targetTexture.Release();
         videoPrincipalCorrida.enabled = false;
         videoPrincipalCorrida.enabled = true;
@@ -257,16 +257,14 @@ public class VideoController : MonoBehaviour
 
     private IEnumerator AnimateButtonSize(Button button)
     {
-        float duration = 0.5f; // Duração da animação (segundos)
+        float duration = 0.5f;
         RectTransform buttonTransform = button.GetComponent<RectTransform>();
 
-        Vector2 originalSize = buttonTransform.sizeDelta; // Tamanho original do botão
-        Vector2 targetSize = originalSize * 1.2f; // Tamanho aumentado (120% do original)
+        Vector2 originalSize = buttonTransform.sizeDelta;
+        Vector2 targetSize = originalSize * 1.2f;
 
-        // Executar a animação 3 vezes
         for (int i = 0; i < 3; i++)
         {
-            // Crescendo o botão
             for (float t = 0; t < duration; t += Time.deltaTime)
             {
                 float normalizedTime = t / duration;
@@ -275,10 +273,8 @@ public class VideoController : MonoBehaviour
                 yield return null;
             }
 
-            // Garante que o tamanho final seja o tamanho alvo
             buttonTransform.sizeDelta = targetSize;
 
-            // Retornando ao tamanho original
             for (float t = 0; t < duration; t += Time.deltaTime)
             {
                 float normalizedTime = t / duration;
@@ -287,7 +283,6 @@ public class VideoController : MonoBehaviour
                 yield return null;
             }
 
-            // Garante que o tamanho final seja o tamanho original
             buttonTransform.sizeDelta = originalSize;
         }
     }
@@ -295,5 +290,14 @@ public class VideoController : MonoBehaviour
     public void AnimateSpecificButton(Button button)
     {
         StartCoroutine(AnimateButtonSize(button));
+    }
+
+    IEnumerator DelayedBarLoadActivation()
+    {
+        yield return new WaitForSeconds(0.1f);
+        barLoadAnimator.SetActive(true);
+        Animator animator = barLoadAnimator.GetComponent<Animator>();
+        animator.Rebind();
+        animator.Play("bar_load", -1, 0f);
     }
 }
